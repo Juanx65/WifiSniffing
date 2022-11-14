@@ -55,7 +55,7 @@ First, check your wlan interface: `ifconfig`
     TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
   ```
   
-The interface of interes here is ` wlo1` (it is often `wlan0`).
+The interface of interest is ` wlo1` (often `wlan0`).
 
 Use `iw <interface> info` to show information of the wlan interface:
 
