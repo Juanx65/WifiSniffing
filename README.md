@@ -4,23 +4,25 @@ testing A Case Study of WiFi Sniffing for Class Project
 In this project, the goal is to sniff the probe request from mobil users, so we are going to be sniffing the probe-req messages only.
 
 
-paper: `https://ieeexplore.ieee.org/document/9138409`
+ * paper: `https://ieeexplore.ieee.org/document/9138409`
 
-scrit for channel hopping: `https://gist.githubusercontent.com/hnw/6fbd3ac3bb59d0c93fc0bd2a823cf5cb/raw/8d3f3a0d0e7da98c43feba59e741aa40049646d2/chanhop.sh`
+ * script for channel hopping: `https://gist.githubusercontent.com/hnw/6fbd3ac3bb59d0c93fc0bd2a823cf5cb/raw/8d3f3a0d0e7da98c43feba59e741aa40049646d2/chanhop.sh`
 
-tutorials for monitor mode and iw use: `https://netbeez.net/blog/linux-how-to-configure-monitoring-mode-wifi-interface/` `https://netbeez.net/blog/linux-channel-hopping-wifi-packet-capturing/`
+ * tutorials for monitor mode and iw use: 
+ 	- `https://netbeez.net/blog/linux-how-to-configure-monitoring-mode-wifi-interface/` 
+	- `https://netbeez.net/blog/linux-channel-hopping-wifi-packet-capturing/`
 
-Attemps to reproduce the WiFi sniffing on Oragne Pi Zero
-  problems:
-    - can't configure channel hopping due to Error 524
-  achievements.
-    -sniff probe request in signle channel (channel 5, default).
+ * Attemps to reproduce the WiFi sniffing on Oragne Pi Zero
+   	problems:
+    		- can't configure channel hopping due to Error 524
+  	achievements.
+    		-sniff probe request in signle channel (channel 5, default).
    
-As I do not  own any other hardware, proceed to test on a linux notebook (manjaro linux, gnome version 42.4)
-  achievements.
-    -single channel probe request.
-    -hopping over the IEEE80211B channels (the 11 firsts).
-This may be reproduced on a RPi 3 model B.
+ * As I do not  own any other hardware, proceed to test on a linux notebook (manjaro linux, gnome version 42.4)
+  	achievements.
+    		-single channel probe request.
+    		-hopping over the IEEE80211B channels (the 11 firsts).
+ * This may be reproduced on a RPi 3 model B.
 
 
 ### How to set up (linux notebook)
@@ -30,7 +32,7 @@ install tcpdump: `sudo pacman -S tcpdump`
 install aircrack-ng: `sudo pacman -S aircrack-ng`
 if it is not installed, install iw
 
-#### configure monitor mode
+### configure monitor mode
 
 First, check your wlan connection: `ifconfig`
   output:
@@ -90,7 +92,7 @@ We need it to be type monitor, for this we will be using aircrack-ng as follows:
   
   this creates `wlo1mon` interfaces which we will be using for monitoing (at the channel 1, in this case).
   
-  ### multy channel sniffing:
+  ### channel hopping:
   using the script `chanmon.sh` allows to hop into different channes in monitor mode, use as follows:
   
   ```
@@ -104,6 +106,8 @@ We need it to be type monitor, for this we will be using aircrack-ng as follows:
   ```
   
   for more information, use ./chanhop.sh --help
+  
+  
   
   ### tcpdump single channel
   
@@ -121,12 +125,14 @@ We need it to be type monitor, for this we will be using aircrack-ng as follows:
   
   obs: to prevent error `tcpdump: Couldn't change ownership of savefile` download the latest version of tcpdump ( I use version 4.99.1 ).
   
+  
+  
   ### tcpdump channel hopping
   
   to siff the proge req files on channel hopping do as follow:
   
   ```
-  sudo ./chanhop.sh -i <interface> -b <band> -d <time>& sudo tcpdump -I -i y IEEE802_11_RADIO -e -s 256 type mgt subtype probe-req -w channelhoping-20min-house.pcap
+  sudo ./chanhop.sh -i <interface> -b <band> -d <channel time s> & sudo tcpdump -I -i <interface> -y IEEE802_11_RADIO -e -s 256 type mgt subtype probe-req -w <file name>
   
 
   ```
@@ -135,6 +141,7 @@ We need it to be type monitor, for this we will be using aircrack-ng as follows:
   ```
   sudo ./chanhop.sh -i wlo1mon -b IEEE80211B -d .10 & sudo tcpdump -I -i wlo1mon -y IEEE802_11_RADIO -e -s 256 type mgt subtype probe-req -w channelhoping-20min-house.pcap
   ```
-
+  
+  
   
 
