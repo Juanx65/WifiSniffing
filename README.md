@@ -1,5 +1,5 @@
 # WifiSniffing
-testing A Case Study of WiFi Sniffing for Class Project 
+Testing A Case Study of WiFi Sniffing for Class Project 
 
 In this project, the goal is to sniff the probe request from mobil users, so we are going to be sniffing the probe-req messages only.
 
@@ -13,15 +13,12 @@ In this project, the goal is to sniff the probe request from mobil users, so we 
 	- `https://netbeez.net/blog/linux-channel-hopping-wifi-packet-capturing/`
 
  * Attemps to reproduce the WiFi sniffing on Oragne Pi Zero
-   	problems:
-    		- can't configure channel hopping due to Error 524
-  	achievements.
-    		-sniff probe request in signle channel (channel 5, default).
+   	- Can't configure channel hopping due to Unknown Error 524 (-524).
+  	- Sniff probe request in signle channel (channel 5, default).
    
  * As I do not  own any other hardware, proceed to test on a linux notebook (manjaro linux, gnome version 42.4)
-  	achievements.
-    		-single channel probe request.
-    		-hopping over the IEEE80211B channels (the 11 firsts).
+  	- Single channel probe request.
+    	- Hopping over the IEEE80211B channels (the 11 firsts).
  * This may be reproduced on a RPi 3 model B.
 
 
