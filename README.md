@@ -59,20 +59,20 @@ The interface of interest is ` wlo1` (often `wlan0`).
 
 Use `iw <interface> info` to show information of the wlan interface:
 
-	input:
-	
-	
+input:
 
-	output:
+```iw wlo1 info```
+
+output:
 ```
-	Interface wlo1
-	ifindex *
-	wdev 0x*
-	addr **:**:**:**:**:**
-	type managed
-	wiphy 0
-	channel 4 (2427 MHz), width: 20 MHz (no HT), center1: 2427 MHz
-	txpower 0.00 dBm
+Interface wlo1
+ifindex *
+wdev 0x*
+addr **:**:**:**:**:**
+type managed
+wiphy 0
+channel 4 (2427 MHz), width: 20 MHz (no HT), center1: 2427 MHz
+txpower 0.00 dBm
 
 ```
 
@@ -88,31 +88,31 @@ We need it to be type monitor, for this we will be using aircrack-ng as follows:
   sudo airmon-ng start wlo1 11 
   ```
   output:
-  ```
-  PHY	Interface	Driver		Chipset
-  phy0	wlo1		iwlwifi		***
-		(mac80211 monitor mode enabled for [phy0]wlo1 on [phy0]wlo1mon)
-  
-  ```
+```
+PHY	Interface	Driver		Chipset
+phy0	wlo1		iwlwifi		***
+	(mac80211 monitor mode enabled for [phy0]wlo1 on [phy0]wlo1mon)
+ 
+```
   
   this creates `wlo1mon` interfaces which we will be using for monitoing (at the channel 11, in this case).
   
   Check the `iw <interface> info` again, it should be something like:
 
 ``` 
-	Interface wlo1mon
-	ifindex *
-	wdev 0x*
-	addr **:**:*:**:**:**
-	type monitor
-	wiphy 0
-	channel 11 (2462 MHz), width: 20 MHz (no HT), center1: 2462 MHz
-	txpower 0.00 dBm
+Interface wlo1mon
+ifindex *
+wdev 0x*
+addr **:**:*:**:**:**
+type monitor
+wiphy 0
+channel 11 (2462 MHz), width: 20 MHz (no HT), center1: 2462 MHz
+txpower 0.00 dBm
 
 ```
   
   
-  ### Channel hopping:
+  ## Channel hopping:
   
   The script `chanmon.sh` allows to hop into different channes in monitor mode, use as follows:
   
@@ -129,7 +129,7 @@ We need it to be type monitor, for this we will be using aircrack-ng as follows:
   for more information, use ./chanhop.sh --help
   
   
-  ### Tcpdump single channel
+  # TCPDUMP SINGLE CHANNEL
   
   Once the wlan interface is set as monitor mode, we can sniff the probe request on it using tcpdump as follows:
   
@@ -147,9 +147,9 @@ We need it to be type monitor, for this we will be using aircrack-ng as follows:
   
   
   
-  ### Tcpdump channel hopping
+  # TCPDUMP CHANNEL HOPPING
   
-  To siff the proge req files on channel hopping do as follow:
+  To sniff the probe-req files on channel hopping do as follow:
   
   ```
   sudo ./chanhop.sh -i <interface> -b <band> -d <channel time s> & sudo tcpdump -I -i <interface> -y IEEE802_11_RADIO -e -s 256 type mgt subtype probe-req -w <file name>
