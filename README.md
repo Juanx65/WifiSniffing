@@ -1,28 +1,20 @@
-# WifiSniffing
-Testing A Case Study of WiFi Sniffing for Class Project 
+# A Case Study of WiFi Sniffing Performance Evaluation 
+## Class project review
 
-In this project, the goal is to sniff the probe request from mobil users, so we are going to be sniffing the probe-req messages only.
+The goal of this repository is to recreate the results shown in this paper:
+    
+    https://ieeexplore.ieee.org/document/9138409
 
-
- * paper: `https://ieeexplore.ieee.org/document/9138409`
-
- * script for channel hopping: `https://gist.githubusercontent.com/hnw/6fbd3ac3bb59d0c93fc0bd2a823cf5cb/raw/8d3f3a0d0e7da98c43feba59e741aa40049646d2/chanhop.sh`
-
- * tutorials for monitor mode and iw use: 
- 	- `https://netbeez.net/blog/linux-how-to-configure-monitoring-mode-wifi-interface/` 
-	- `https://netbeez.net/blog/linux-channel-hopping-wifi-packet-capturing/`
-
- * Attemps to reproduce the WiFi sniffing on Oragne Pi Zero
+ * WiFi sniffing on Oragne Pi Zero
    	- Can't configure channel hopping due to Unknown Error 524 (-524).
   	- Sniff probe request in signle channel (channel 5, default).
    
- * As I do not  own any other hardware, proceed to test on a linux notebook (manjaro linux, gnome version 42.4)
- 	- Single channel probe request.
-   	- Hopping over the IEEE80211B channels (the 11 firsts).
- * This may be reproduced on a RPi 3 model B.
+ * Test on a linux notebook (manjaro linux, gnome version 42.4)
+   	- Channel hopping over the IEEE80211B channels in different setups.
+    - This may be reproduced on a RPi 3 model B.
 
 
-### How to set up (linux notebook)
+### How to set up (Majaro linux)
 
 Install net-tools: `sudo pacman -S net-tools`
 
@@ -30,13 +22,20 @@ Install tcpdump: `sudo pacman -S tcpdump`
 
 Install aircrack-ng: `sudo pacman -S aircrack-ng`
 
-If it is not installed, install iw
+Install `iw`
 
 
 ### Configure monitor mode
 
-First, check your wlan interface: `ifconfig`
-  output:
+First, check your wlan interface with: 
+
+input:
+
+`ifconfig`
+
+
+output:
+
   ```
     eno1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
     inet 192.168.*.**  netmask 255.255.255.0  broadcast 192.168.*.255
@@ -76,13 +75,17 @@ txpower 0.00 dBm
 
 ```
 
-We need it to be type monitor, for this we will be using aircrack-ng as follows:
+We need it to be `type monitor`, for this use aircrack-ng as follows:
 
-  First, to ensure that others process do not interfere with our monitoring, use
+  First, to ensure that others process do not interfere, use
+
   ``` sudo airmon-ng check kill ```
-  It may let you without Wi-Fi connection, but with Ethernet you still can use the net...
+  
+  It might let you without Wi-Fi connection (a reboot will solve it).
   
   Then, use the following `sudo airmon-ng start <interface> <channel>` as follows for interface `wlon1` and channel 11
+
+  input:
   
   ```
   sudo airmon-ng start wlo1 11 
@@ -95,9 +98,9 @@ phy0	wlo1		iwlwifi		***
  
 ```
   
-  this creates `wlo1mon` interfaces which we will be using for monitoing (at the channel 11, in this case).
+  This creates `wlo1mon` interfaces which we will be using for monitoing (at the channel 11, in this case).
   
-  Check the `iw <interface> info` again, it should be something like:
+  Check the `iw <interface> info` again, it should look like:
 
 ``` 
 Interface wlo1mon
@@ -112,7 +115,7 @@ txpower 0.00 dBm
 ```
   
   
-  ## Channel hopping:
+  # Channel hopping:
   
   When creating the `chanhop.sh` file, remeber to give it permission: `chmod 700 chanhop.sh`. 
   
@@ -133,7 +136,7 @@ txpower 0.00 dBm
   
   # TCPDUMP SINGLE CHANNEL
   
-  Once the wlan interface is set as monitor mode, we can sniff the probe request on it using tcpdump as follows:
+  Once the wlan interface is set as `monitor mode`, we can sniff the probe request on it using tcpdump as follows:
   
   ```
   sudo tcpdump -I -i <intreface> -y IEEE802_11_RADIO -e -s 256 type mgt subtype probe-req -w <filen name to save>
@@ -163,7 +166,78 @@ txpower 0.00 dBm
   ```
   sudo ./chanhop.sh -i wlo1mon -b IEEE80211B -d .10 & sudo tcpdump -I -i wlo1mon -y IEEE802_11_RADIO -e -s 256 type mgt subtype probe-req -w channelhoping-20min-house.pcap
   ```
+
+# PCAP ANALYSIS
+
+## Setup env
+Create an envitoment using `virtualenv` as follows:
+
+``` 
+virtualenv env
+``` 
+
+Activate it:
+
+```
+source env/bin/activate        
+``` 
+
+Install requirements:
+
+```
+pip install -r requirements.txt
+```
+
+## Analysis of probe request
+
+For the datasets in `\datasets`, use `pcap-analyzer.py` as follows:
+
+```
+python pcap-analyzer.py --file_name "/datasets/60m_05s_home" 
+```
+ 
+Where `60m_05s_home` is one of the folders with `pcap` test files.
+
+Output example:
+
+```
+CH1.pcap
+#SA:  11
+CH2.pcap
+#SA:  17
+CH3.pcap
+#SA:  13
+CH4.pcap
+#SA:  10
+          Number of Packets
+CH1.pcap                 77
+CH2.pcap                 94
+CH3.pcap                 50
+CH4.pcap                 48
+Valid MAC : 21.098039215686274 %
+``` 
+
+Where `#SA` stands for number of Source Address, and the number of packates shown are for the valid MAC address only.
+
+
+#   
+## References
+
+* Paper:
+
+    `https://ieeexplore.ieee.org/document/9138409`
+
+ * Script for channel hopping: 
+ 
+      `https://gist.githubusercontent.com/hnw/6fbd3ac3bb59d0c93fc0bd2a823cf5cb/raw/8d3f3a0d0e7da98c43feba59e741aa40049646d2/chanhop.sh`
+
+ * Tutorials for monitor mode and iw use: 
+ 	- `https://netbeez.net/blog/linux-how-to-configure-monitoring-mode-wifi-interface/` 
+	- `https://netbeez.net/blog/linux-channel-hopping-wifi-packet-capturing/`
+
+
+* MAC-lookup
   
-  
+  `https://github.com/henriksb/MAC-Lookup`
   
 
