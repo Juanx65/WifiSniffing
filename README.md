@@ -117,9 +117,9 @@ txpower 0.00 dBm
   
   # Channel hopping:
   
-  When creating the `chanhop.sh` file, remeber to give it permission: `chmod 700 chanhop.sh`. 
+  When creating the `chanhop.sh` file, give it permission: `chmod 700 chanhop.sh`. 
   
-  The script `chanhon.sh` allows to hop into different channes in monitor mode, use as follows:
+  The script `chanhon.sh` allows to hop into different channels in monitor mode, use as follows:
   
   ```
   ./chanhop.sh -i <interface> -b <band> -b <band> -d <time on each channel in seconds>
