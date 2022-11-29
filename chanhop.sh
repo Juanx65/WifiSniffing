@@ -10,6 +10,11 @@
 BANDS="IEEE80211B"
 DWELLTIME=".25"
 
+CH1="1 2 3 4 5 6 7 8 9 10 11"
+CH2="1 6 11"
+CH3="1 7 13 2 8 3 9 4 10 5 11 6 12"
+CH4="1 6 11 2 7 3 8 4 9 5 10"
+
 CHANB="1 6 11 2 7 3 8 4 9 5 10"
 CHANBJP="1 13 6 11 2 12 7 3 8 14 4 9 5 10"
 CHANBINTL="1 13 6 11 2 12 7 3 8 4 9 5 10"
@@ -106,6 +111,18 @@ fi
 # Expand specified bands into a list of channels
 for BAND in $BANDS ; do
 	case "$BAND" in
+	CH1)
+		CHANNELS="$CH1"
+		;;
+	CH2)
+		CHANNELS="$CH2"
+		;;
+	CH3)
+		CHANNELS="$CH3"
+		;;
+	CH4)
+		CHANNELS="$CH4"
+		;;
 	IEEE80211B|IEEE80211b|ieee80211b)
 		CHANNELS="$CHANNELS $CHANB"
 		;;
