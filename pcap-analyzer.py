@@ -27,18 +27,32 @@ def analyzer(opt):
     for pcap in archivos:
         captura = pyshark.FileCapture(loadPath+'/'+pcap)
         valid_SA = []
+
+        n_packet=0
+
+        srg_RSS = -100000000000000000
+        weak_RSS = 0
         
         for packet in captura: #packet.wlan.sa == Source MAC address 
             mac_count += 1
+            n_packet += 1
             if(compare_macs(packet.wlan.sa)):
                 valid_SA.append(packet.wlan.sa)
-                valid_mac_count += 1  
+                valid_mac_count += 1 
+                #print(packet.wlan_radio.signal_dbm) # RSS del paquete
+                RSS = int (packet.wlan_radio.signal_dbm)
+                if(RSS > srg_RSS):
+                    srg_RSS = RSS
+                if(RSS < weak_RSS):
+                    weak_RSS = RSS 
         print(pcap)
         CountFrequency(valid_SA)
+        print("Valid MAC :",len(valid_SA)/n_packet * 100 , "%")
+        print("RSS from ",weak_RSS, " to ", srg_RSS, " dbm")
         channels[pcap] = len(valid_SA)
     df = pd.DataFrame(channels.values(),index=channels.keys(), columns=['Number of Packets'])
     print(df)
-    print("Valid MAC :",valid_mac_count/mac_count * 100 , "%")
+    print("Toral Valid MAC :",valid_mac_count/mac_count * 100 , "%")
 
     df.to_excel('channels_graph1.xlsx', sheet_name='new_sheet_name')
         

@@ -251,6 +251,24 @@ and make sure it does exist with `iw wlo2 info`
 
 after that you can use airmon-ng to configure it and use it as you please.
 
+# PCAM Info
+
+to obtanie information of the pcap files, you can use in python console:
+
+``` 
+import pyshark
+capture = pyshark.FileCapture( "filedir/filename.pcap" )
+dir(capture[0])
+
+```
+
+this will provide information about what you can extract from every pcap package captured.
+
+# Fix IncompleteRead error
+
+Use `pcapfix` in de .pcap file with the error
+
+
 #   
 ## References
 
