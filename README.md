@@ -220,6 +220,37 @@ Valid MAC : 21.098039215686274 %
 Where `#SA` stands for number of Source Address, and the number of packates shown are for the valid MAC address only.
 
 
+## Multichannel antenna
+
+If your hardware is capable of, you may want to sniff at different channels at the same time.
+
+To can obtine information of your interface with `iw list` and check the 'valid interface cominations' that may looks as follows:
+
+```
+valid interface combinations:
+		 * #{ managed } <= 1, #{ AP, P2P-client, P2P-GO } <= 1, #{ P2P-device } <= 1,
+		   total <= 3, #channels <= 2
+
+``` 
+
+where it indicates that there are 2 channels.
+
+Now you can create the number of channels interfaces to sniff on as follows:
+
+```
+iw dev <interface> interface add <new interface name> type monitor
+```
+
+example:
+
+```
+iw dev wlo1 interface add wlo2 type monitor
+```
+
+and make sure it does exist with `iw wlo2 info`
+
+after that you can use airmon-ng to configure it and use it as you please.
+
 #   
 ## References
 
@@ -240,4 +271,7 @@ Where `#SA` stands for number of Source Address, and the number of packates show
   
   `https://github.com/henriksb/MAC-Lookup`
   
+* Multichannel capable antenna
+  `https://superuser.com/questions/1137949/multiple-802-11-association-with-single-physical-antenna`
+
 
