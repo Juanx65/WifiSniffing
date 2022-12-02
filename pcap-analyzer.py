@@ -10,6 +10,10 @@ import platform
 
 import sys
 
+from openpyxl import load_workbook
+
+from collections import OrderedDict
+
 import os
 from pathlib import Path
 import argparse
@@ -24,11 +28,16 @@ def analyzer(opt):
 
     loadPath = str( str(Path(__file__).parent) + opt.file_name)
     archivos = os.listdir(str(loadPath))
-    channels = {} 
+    channels = {}
     valid_mac_count = 0
     mac_count = 0
 
+    
+    RSS_graph = pd.ExcelWriter('RSS_graphs.xlsx',engine = 'openpyxl')
+
     for pcap in archivos:
+        RSS_dist = {} 
+
         captura = pyshark.FileCapture(loadPath+'/'+pcap)
         valid_SA = []
 
@@ -42,7 +51,11 @@ def analyzer(opt):
         for packet in captura: #packet.wlan.sa == Source MAC address 
             
             RSS = int (packet.wlan_radio.signal_dbm) # RSS: fuerza de la señal, en dbm
-            
+            if(RSS not in RSS_dist):
+                RSS_dist[RSS] = 1
+            else:
+                RSS_dist[RSS] += 1
+
             mac_count += 1
             n_packet += 1
 
@@ -65,6 +78,13 @@ def analyzer(opt):
         print("Valid MAC :",len(valid_SA)/n_packet * 100 , "%")
         print("RSS from ",weak_RSS, " to ", srg_RSS, "with an avg of", RSS_avg , " dbm")
         channels[pcap] = (n_packet, len(valid_SA), num_devices)
+
+        RSS_dist = OrderedDict(sorted(RSS_dist.items()))
+        df = pd.DataFrame(RSS_dist.values(), index=RSS_dist.keys() ,columns=['Frecuencia'])
+        print(df)
+        df.to_excel(RSS_graph, sheet_name=pcap)
+
+    RSS_graph.close()
     
     df = pd.DataFrame(channels.values(), index=channels.keys() ,columns=['# Total Packets', '# Valid Packets', '# Devices (SA)'])
     print(df)
