@@ -222,9 +222,9 @@ Where `#SA` stands for number of Source Address, and the number of packates show
 
 ## Multichannel antenna
 
-If your hardware is capable of, you may want to sniff at different channels at the same time.
+If your hardware is capable of, you might want to sniff at different channels at the same time.
 
-To can obtine information of your interface with `iw list` and check the 'valid interface cominations' that may looks as follows:
+Get information of your interface with `iw list` and check the 'valid interface cominations' that may looks as follows:
 
 ```
 valid interface combinations:
