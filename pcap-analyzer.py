@@ -8,9 +8,13 @@ import openpyxl
 from bs4 import BeautifulSoup
 import platform
 
+import sys
+
 import os
 from pathlib import Path
 import argparse
+
+sys.tracebacklimit = 0
 
 MAC_URL = "http://standards-oui.ieee.org/oui.txt" # url para verificar las MAC address atravez del OUI
 
@@ -32,27 +36,39 @@ def analyzer(opt):
 
         srg_RSS = -100000000000000000
         weak_RSS = 0
+        RSS_sum = 0
+        RSS_avg = 0
         
         for packet in captura: #packet.wlan.sa == Source MAC address 
+            
+            RSS = int (packet.wlan_radio.signal_dbm) # RSS: fuerza de la señal, en dbm
+            
             mac_count += 1
             n_packet += 1
+
+            if(RSS > srg_RSS):
+                srg_RSS = RSS
+            if(RSS < weak_RSS):
+                weak_RSS = RSS 
+
+            RSS_sum += RSS
+
             if(compare_macs(packet.wlan.sa)):
                 valid_SA.append(packet.wlan.sa)
                 valid_mac_count += 1 
-                #print(packet.wlan_radio.signal_dbm) # RSS del paquete
-                RSS = int (packet.wlan_radio.signal_dbm)
-                if(RSS > srg_RSS):
-                    srg_RSS = RSS
-                if(RSS < weak_RSS):
-                    weak_RSS = RSS 
+            
+        RSS_avg = RSS_sum/n_packet
+                
         print(pcap)
-        CountFrequency(valid_SA)
+        num_devices = CountFrequency(valid_SA)
+        print("Total number of packets: ", n_packet)
         print("Valid MAC :",len(valid_SA)/n_packet * 100 , "%")
-        print("RSS from ",weak_RSS, " to ", srg_RSS, " dbm")
-        channels[pcap] = len(valid_SA)
-    df = pd.DataFrame(channels.values(),index=channels.keys(), columns=['Number of Packets'])
+        print("RSS from ",weak_RSS, " to ", srg_RSS, "with an avg of", RSS_avg , " dbm")
+        channels[pcap] = (n_packet, len(valid_SA), num_devices)
+    
+    df = pd.DataFrame(channels.values(), index=channels.keys() ,columns=['# Total Packets', '# Valid Packets', '# Devices (SA)'])
     print(df)
-    print("Toral Valid MAC :",valid_mac_count/mac_count * 100 , "%")
+    print("Total Valid MAC :",valid_mac_count/mac_count * 100 , "%")
 
     df.to_excel('channels_graph1.xlsx', sheet_name='new_sheet_name')
         
@@ -65,7 +81,8 @@ def CountFrequency(my_list):
             freq[item] += 1
         else:
             freq[item] = 1
-    print("#SA: ", len(freq))
+    print("Number of devices: ", len(freq))
+    return len(freq)
     #for key, value in freq.items():
     #    print ("% s : % d"%(key, value))
 
